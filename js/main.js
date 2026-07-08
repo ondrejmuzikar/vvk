@@ -5,7 +5,7 @@
     1: {
       title: 'Jídelní stůl z dubu',
       meta: 'Dub · Stoly',
-      desc: 'Masivní jídelní stůl z jednoho kusu dubového dřeva. Tlustá deska, pevné nohy, olejová úprava. Každý stůl je unikát — kresba dřeva se nikdy neopakuje.',
+      desc: 'Masivní jídelní stůl z jednoho kusu dubového dřeva. Tlustá deska, pevné nohy, olejová úprava. Každý stůl je unikát, kresba dřeva se nikdy neopakuje.',
       price: 'od 45 000 Kč',
       image: 'assets/images/placeholder-product.svg',
       type: 'stoly'
@@ -37,7 +37,7 @@
     5: {
       title: 'Konferenční stolek',
       meta: 'Ořech · Stoly',
-      desc: 'Kompaktní konferenční stolek z ořechového masivu. Ideální doplněk obývacího pokoje — pevný, elegantní, trvanlivý.',
+      desc: 'Kompaktní konferenční stolek z ořechového masivu. Ideální doplněk obývacího pokoje: pevný, elegantní, trvanlivý.',
       price: 'od 18 000 Kč',
       image: 'assets/images/placeholder-product.svg',
       type: 'stoly'
@@ -158,10 +158,16 @@
   });
 
   /* Contact form */
+  // Formspree: sign up free at https://formspree.io, create a form that
+  // delivers to vojtovyvelkeklady@gmail.com, then replace YOUR_FORM_ID below
+  // with the ID Formspree gives you (e.g. https://formspree.io/f/abcdwxyz).
+  const FORMSPREE_ENDPOINT = 'https://formspree.io/f/YOUR_FORM_ID';
+
   const form = document.getElementById('contact-form');
   const formStatus = document.getElementById('form-status');
+  const submitBtn = form.querySelector('button[type="submit"]');
 
-  form.addEventListener('submit', e => {
+  form.addEventListener('submit', async e => {
     e.preventDefault();
 
     const name = form.name.value.trim();
@@ -175,9 +181,39 @@
       return;
     }
 
-    formStatus.textContent = 'Děkujeme za poptávku. Ozveme se vám do dvou pracovních dnů.';
-    formStatus.className = 'form-status success';
-    form.reset();
+    if (form._gotcha.value) return; // honeypot: bots only
+
+    if (FORMSPREE_ENDPOINT.includes('YOUR_FORM_ID')) {
+      formStatus.textContent = 'Formulář zatím není napojený na odeslání e-mailu. Dokončete prosím nastavení Formspree.';
+      formStatus.className = 'form-status error';
+      return;
+    }
+
+    submitBtn.disabled = true;
+    formStatus.textContent = 'Odesíláme poptávku…';
+    formStatus.className = 'form-status';
+
+    try {
+      const response = await fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { Accept: 'application/json' }
+      });
+
+      if (response.ok) {
+        formStatus.textContent = 'Děkujeme za poptávku. Ozveme se vám do dvou pracovních dnů.';
+        formStatus.className = 'form-status success';
+        form.reset();
+      } else {
+        formStatus.textContent = 'Poptávku se nepodařilo odeslat. Zkuste to prosím znovu nebo nám napište přímo na e-mail.';
+        formStatus.className = 'form-status error';
+      }
+    } catch (err) {
+      formStatus.textContent = 'Poptávku se nepodařilo odeslat. Zkontrolujte připojení a zkuste to znovu.';
+      formStatus.className = 'form-status error';
+    } finally {
+      submitBtn.disabled = false;
+    }
   });
 
   /* Header shadow on scroll */
