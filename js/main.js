@@ -14,49 +14,49 @@
     1: {
       title: 'Jídelní stůl z dubu',
       meta: 'Dub · Stoly',
-      desc: 'Masivní dubová deska, spárovaná z fošen a naolejovaná. Podnož podle vás, dřevěná nebo kovová. Rozměry sednou na váš prostor i na počet židlí.',
+      desc: 'Dubová deska spárovaná z fošen a naolejovaná. Podnož podle vás, dřevěná i kovová. Rozměry sedneme na váš prostor i na počet židlí.',
       price: 'od 45 000 Kč',
-      image: 'assets/images/placeholder-product.svg',
+      image: 'assets/images/prod-stul.jpg',
       type: 'stoly'
     },
     2: {
       title: 'Vestavěná skříň',
       meta: 'Ořech · Skříně',
-      desc: 'Skříň na míru přesně na centimetr, od podlahy až ke stropu. Vnitřek uspořádám podle toho, co do ní půjde. Tiché dovírání je samozřejmost.',
+      desc: 'Skříň na míru přesně na centimetr, od podlahy až ke stropu. Vnitřek uspořádáme podle toho, co do ní půjde. Tiché dovírání je samozřejmost.',
       price: 'od 80 000 Kč',
-      image: 'assets/images/placeholder-product.svg',
+      image: 'assets/images/prod-skrin.jpg',
       type: 'skrine'
     },
     3: {
       title: 'Kuchyně na míru',
       meta: 'Dub · Kuchyně',
-      desc: 'Dvířka z masivu, pevné korpusy a pracovní deska podle výběru. Navrhnu ji tak, aby se v ní dobře vařilo a přitom vypadala.',
+      desc: 'Dvířka ze dřeva, pevné korpusy a pracovní deska podle výběru. Navrhneme ji tak, aby se v ní dobře vařilo a přitom vypadala.',
       price: 'od 120 000 Kč',
-      image: 'assets/images/placeholder-product.svg',
+      image: 'assets/images/prod-kuchyne.jpg',
       type: 'kuchyne'
     },
     4: {
       title: 'Schodiště z jasanu',
       meta: 'Jasan · Schody',
-      desc: 'Stupně z masivního jasanu, pevná konstrukce a hladké madlo. Počítám i s tím, aby nevrzalo a dobře se po něm chodilo naboso.',
+      desc: 'Stupně z jasanu, pevná konstrukce a hladké madlo. Pohlídáme, aby nevrzalo a dobře se po něm chodilo naboso.',
       price: 'od 65 000 Kč',
-      image: 'assets/images/placeholder-product.svg',
+      image: 'assets/images/prod-schody.jpg',
       type: 'schody'
     },
     5: {
       title: 'Konferenční stolek',
       meta: 'Ořech · Stoly',
-      desc: 'Menší stolek z ořechového masivu. Poctivý kus do obýváku, který vydrží roky každodenního používání.',
+      desc: 'Menší stolek z ořechu. Poctivý kus do obýváku, který vydrží roky každodenního používání.',
       price: 'od 18 000 Kč',
-      image: 'assets/images/placeholder-product.svg',
+      image: 'assets/images/prod-stolek.jpg',
       type: 'stoly'
     },
     6: {
       title: 'Knihovna z dubu',
       meta: 'Dub · Skříně',
-      desc: 'Dubová knihovna s policemi na míru vaší sbírce. Stavitelné police, pevná záda, rozměry přesně na váš pokoj.',
+      desc: 'Knihovna s policemi na míru vaší sbírce. Stavitelné police, pevná záda, rozměry přesně na váš pokoj.',
       price: 'od 35 000 Kč',
-      image: 'assets/images/placeholder-product.svg',
+      image: 'assets/images/prod-knihovna.jpg',
       type: 'skrine'
     }
   };
@@ -292,7 +292,7 @@
         ['name', 'contact', 'type', 'message'].forEach(k => noFiles.append(k, form[k] ? form[k].value : ''));
         const retry = await post(noFiles);
         if (retry.ok) {
-          setStatus('Poptávku mám. Fotky se ale nepodařilo připojit, pošlete mi je prosím na e-mail. Ozvu se do dvou pracovních dnů.', 'success');
+          setStatus('Poptávku máme. Fotky se ale nepodařilo připojit, pošlete nám je prosím na e-mail. Ozveme se do dvou pracovních dnů.', 'success');
           form.reset();
           chosenFiles = [];
           renderFiles();
@@ -301,12 +301,12 @@
       }
 
       if (response.ok) {
-        setStatus('Děkuji za poptávku. Ozvu se vám do dvou pracovních dnů.', 'success');
+        setStatus('Děkujeme za poptávku. Ozveme se vám do dvou pracovních dnů.', 'success');
         form.reset();
         chosenFiles = [];
         renderFiles();
       } else {
-        setStatus('Poptávku se nepodařilo odeslat. Zkuste to prosím znovu, nebo mi napište přímo na e-mail.', 'error');
+        setStatus('Poptávku se nepodařilo odeslat. Zkuste to prosím znovu, nebo nám napište přímo na e-mail.', 'error');
       }
     } catch (err) {
       setStatus('Poptávku se nepodařilo odeslat. Zkontrolujte připojení a zkuste to znovu.', 'error');
