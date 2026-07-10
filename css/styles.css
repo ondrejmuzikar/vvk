@@ -468,6 +468,7 @@ p { text-wrap: pretty; }
   padding: var(--space-lg) var(--space-md);
   border-bottom: 1px solid rgba(244, 238, 228, 0.12);
   border-right: 1px solid rgba(244, 238, 228, 0.12);
+  text-align: center;
 }
 
 .fact:nth-child(2n) { border-right: none; }
