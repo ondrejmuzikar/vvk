@@ -110,19 +110,6 @@
     revealEls.forEach(el => el.classList.add('visible'));
   }
 
-  /* ── About film: reveal video only once it can play (photo stays otherwise) ── */
-  const aboutVideo = document.querySelector('.about-film-media');
-  if (aboutVideo) {
-    const showVideo = () => aboutVideo.classList.add('is-ready');
-    ['loadeddata', 'canplay', 'playing'].forEach(ev =>
-      aboutVideo.addEventListener(ev, showVideo, { once: true })
-    );
-    if (aboutVideo.readyState >= 2) showVideo();
-    // Safety net for cached videos / browsers that don't re-fire the event
-    setTimeout(() => { if (aboutVideo.readyState >= 2) showVideo(); }, 800);
-    aboutVideo.addEventListener('error', () => aboutVideo.remove());
-  }
-
   /* ── Product filters ── */
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
