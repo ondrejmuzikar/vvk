@@ -12,8 +12,20 @@
      aliasem (https://formsubmit.co/ajax/<hash>), který FormSubmit vygeneruje.
   ───────────────────────────────────────────── */
   const FORM_EMAIL = 'vojtovyvelkeklady@gmail.com';
-  const FORM_AJAX = 'https://formsubmit.co/ajax/' + FORM_EMAIL;   // jen text: hezký inline průběh bez překliknutí
-  const FORM_NATIVE = 'https://formsubmit.co/' + FORM_EMAIL;      // s fotkami: klasické multipart odeslání (AJAX přílohy zahazuje)
+  const FORM_AJAX = 'https://formsubmit.co/ajax/' + FORM_EMAIL;   // doručení poptávky na e-mail (zdarma, bez limitu)
+
+  /* ─────────────────────────────────────────────
+     Cloudinary – bezplatné úložiště fotek z poptávky.
+     Fotky se nahrají do cloudu a do e-mailu přijdou klikací odkazy
+     (přílohy e-mailem zadarmo spolehlivě nefungují, odkaz ano).
+     Vyplň po založení bezplatného účtu na cloudinary.com:
+       CLOUDINARY_CLOUD  = "Cloud name" z dashboardu (Programmable Media)
+       CLOUDINARY_PRESET = název UNSIGNED upload presetu (Settings → Upload)
+     Dokud je prázdné, fotky se nenahrávají a zákazník je vyzván
+     poslat je e-mailem; textová poptávka projde vždy.
+  ───────────────────────────────────────────── */
+  const CLOUDINARY_CLOUD = 'oybvoyl9';
+  const CLOUDINARY_PRESET = 'vojtovyvk';
 
   const products = {
     1: {
@@ -273,28 +285,20 @@
     });
   }
 
-  // Vloží (nebo aktualizuje) skryté pole formuláře – potřeba pro klasické odeslání s přílohami
-  function ensureHidden(fieldName, value) {
-    let el = form.querySelector('input[type="hidden"][name="' + fieldName + '"]');
-    if (!el) {
-      el = document.createElement('input');
-      el.type = 'hidden';
-      el.name = fieldName;
-      form.appendChild(el);
-    }
-    el.value = value;
-  }
+  const cloudinaryReady = Boolean(CLOUDINARY_CLOUD && CLOUDINARY_PRESET);
 
-  // S fotkami: klasické multipart odeslání na FormSubmit (přílohy dorazí), pak přesměrování na poděkování
-  function submitWithAttachments() {
-    ensureHidden('_captcha', 'false');
-    ensureHidden('_template', 'table');
-    ensureHidden('_subject', 'Nová poptávka z webu (s fotkami)');
-    ensureHidden('_next', location.origin + '/dekuji.html');
-    form.action = FORM_NATIVE;
-    form.method = 'post';
-    form.enctype = 'multipart/form-data';
-    form.submit(); // nativní odeslání – nespustí znovu tento listener
+  // Nahraje jeden soubor na Cloudinary a vrátí veřejný odkaz
+  async function uploadToCloudinary(file) {
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('upload_preset', CLOUDINARY_PRESET);
+    const res = await fetch('https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD + '/auto/upload', {
+      method: 'POST',
+      body: fd
+    });
+    if (!res.ok) throw new Error('Cloudinary upload failed');
+    const data = await res.json();
+    return data.secure_url;
   }
 
   form.addEventListener('submit', async (e) => {
@@ -314,20 +318,39 @@
 
     submitBtn.disabled = true;
 
-    // Poptávka s fotkami musí jít klasickým odesláním – přes AJAX by se přílohy zahodily
-    if (chosenFiles.length) {
-      setStatus('Odesílám poptávku i s fotkami…', '');
-      submitWithAttachments();
-      return;
+    // Fotky napřed nahrajeme do cloudu; do e-mailu pak přijdou odkazy
+    let photoLinks = '';
+    let photosFailed = false;
+    if (chosenFiles.length && cloudinaryReady) {
+      setStatus('Nahrávám fotky…', '');
+      try {
+        const urls = [];
+        for (const f of chosenFiles) urls.push(await uploadToCloudinary(f));
+        photoLinks = urls.join('\n');
+      } catch (err) {
+        photosFailed = true;
+      }
+    } else if (chosenFiles.length) {
+      photosFailed = true; // Cloudinary zatím nenastaven
     }
 
     setStatus('Odesílám poptávku…', '');
 
     try {
-      const response = await post(new FormData(form));
+      const data = new FormData();
+      data.append('name', name);
+      data.append('contact', contact);
+      data.append('type', type);
+      data.append('message', message);
+      if (photoLinks) data.append('Fotky', photoLinks);
+
+      const response = await post(data);
 
       if (response.ok) {
-        setStatus('Děkujeme za poptávku. Ozveme se vám do dvou pracovních dnů.', 'success');
+        const msg = photosFailed
+          ? 'Poptávku máme. Fotky se ale nepodařilo nahrát – pošlete nám je prosím na e-mail. Ozveme se do dvou pracovních dnů.'
+          : 'Děkujeme za poptávku. Ozveme se vám do dvou pracovních dnů.';
+        setStatus(msg, 'success');
         form.reset();
         chosenFiles = [];
         renderFiles();
