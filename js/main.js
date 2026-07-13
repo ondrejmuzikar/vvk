@@ -11,7 +11,9 @@
      Tip proti spamu: po aktivaci lze e-mail v URL nahradit náhodným
      aliasem (https://formsubmit.co/ajax/<hash>), který FormSubmit vygeneruje.
   ───────────────────────────────────────────── */
-  const FORM_ENDPOINT = 'https://formsubmit.co/ajax/vojtovyvelkeklady@gmail.com';
+  const FORM_EMAIL = 'vojtovyvelkeklady@gmail.com';
+  const FORM_AJAX = 'https://formsubmit.co/ajax/' + FORM_EMAIL;   // jen text: hezký inline průběh bez překliknutí
+  const FORM_NATIVE = 'https://formsubmit.co/' + FORM_EMAIL;      // s fotkami: klasické multipart odeslání (AJAX přílohy zahazuje)
 
   const products = {
     1: {
@@ -261,15 +263,38 @@
   }
 
   async function post(data) {
-    // FormSubmit config (bezpečné poslat i při retry bez souborů)
-    if (!data.has('_captcha')) data.append('_captcha', 'false');
-    if (!data.has('_template')) data.append('_template', 'table');
-    if (!data.has('_subject')) data.append('_subject', 'Nová poptávka z webu');
-    return fetch(FORM_ENDPOINT, {
+    data.append('_captcha', 'false');
+    data.append('_template', 'table');
+    data.append('_subject', 'Nová poptávka z webu');
+    return fetch(FORM_AJAX, {
       method: 'POST',
       body: data,
       headers: { Accept: 'application/json' }
     });
+  }
+
+  // Vloží (nebo aktualizuje) skryté pole formuláře – potřeba pro klasické odeslání s přílohami
+  function ensureHidden(fieldName, value) {
+    let el = form.querySelector('input[type="hidden"][name="' + fieldName + '"]');
+    if (!el) {
+      el = document.createElement('input');
+      el.type = 'hidden';
+      el.name = fieldName;
+      form.appendChild(el);
+    }
+    el.value = value;
+  }
+
+  // S fotkami: klasické multipart odeslání na FormSubmit (přílohy dorazí), pak přesměrování na poděkování
+  function submitWithAttachments() {
+    ensureHidden('_captcha', 'false');
+    ensureHidden('_template', 'table');
+    ensureHidden('_subject', 'Nová poptávka z webu (s fotkami)');
+    ensureHidden('_next', location.origin + '/dekuji.html');
+    form.action = FORM_NATIVE;
+    form.method = 'post';
+    form.enctype = 'multipart/form-data';
+    form.submit(); // nativní odeslání – nespustí znovu tento listener
   }
 
   form.addEventListener('submit', async (e) => {
@@ -288,24 +313,18 @@
     }
 
     submitBtn.disabled = true;
+
+    // Poptávka s fotkami musí jít klasickým odesláním – přes AJAX by se přílohy zahodily
+    if (chosenFiles.length) {
+      setStatus('Odesílám poptávku i s fotkami…', '');
+      submitWithAttachments();
+      return;
+    }
+
     setStatus('Odesílám poptávku…', '');
 
     try {
-      let response = await post(new FormData(form));
-
-      // Retry without files if the (likely file-related) submit failed
-      if (!response.ok && chosenFiles.length) {
-        const noFiles = new FormData();
-        ['name', 'contact', 'type', 'message'].forEach(k => noFiles.append(k, form[k] ? form[k].value : ''));
-        const retry = await post(noFiles);
-        if (retry.ok) {
-          setStatus('Poptávku máme. Fotky se ale nepodařilo připojit, pošlete nám je prosím na e-mail. Ozveme se do dvou pracovních dnů.', 'success');
-          form.reset();
-          chosenFiles = [];
-          renderFiles();
-          return;
-        }
-      }
+      const response = await post(new FormData(form));
 
       if (response.ok) {
         setStatus('Děkujeme za poptávku. Ozveme se vám do dvou pracovních dnů.', 'success');
