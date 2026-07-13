@@ -2,13 +2,16 @@
   'use strict';
 
   /* ─────────────────────────────────────────────
-     Formspree endpoint (delivers to vojtovyvelkeklady@gmail.com)
-     Note: file attachments require a paid Formspree plan. If the
-     account is on the free plan and a customer attaches photos, the
-     submit gracefully retries without files and tells them to e-mail
-     the photos instead; the text enquiry always gets through.
+     FormSubmit.co endpoint (delivers to vojtovyvelkeklady@gmail.com).
+     Zdarma a bez limitu. Aktivace: při první odeslané poptávce přijde
+     na e-mail potvrzovací odkaz — po kliknutí už poptávky chodí rovnou.
+     Přílohy (fotky/PDF) jsou v ceně; pokud by se přesto nepřipojily,
+     odeslání se zopakuje bez souborů a zákazník je vyzván je poslat
+     e-mailem — textová poptávka projde vždy.
+     Tip proti spamu: po aktivaci lze e-mail v URL nahradit náhodným
+     aliasem (https://formsubmit.co/ajax/<hash>), který FormSubmit vygeneruje.
   ───────────────────────────────────────────── */
-  const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xjgqqoyv';
+  const FORM_ENDPOINT = 'https://formsubmit.co/ajax/vojtovyvelkeklady@gmail.com';
 
   const products = {
     1: {
@@ -258,7 +261,11 @@
   }
 
   async function post(data) {
-    return fetch(FORMSPREE_ENDPOINT, {
+    // FormSubmit config (bezpečné poslat i při retry bez souborů)
+    if (!data.has('_captcha')) data.append('_captcha', 'false');
+    if (!data.has('_template')) data.append('_template', 'table');
+    if (!data.has('_subject')) data.append('_subject', 'Nová poptávka z webu');
+    return fetch(FORM_ENDPOINT, {
       method: 'POST',
       body: data,
       headers: { Accept: 'application/json' }
@@ -268,7 +275,7 @@
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    if (form._gotcha.value) return; // honeypot
+    if (form._honey.value) return; // honeypot
 
     const name = form.name.value.trim();
     const contact = form.contact.value.trim();
