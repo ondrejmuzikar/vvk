@@ -1310,9 +1310,34 @@ p { text-wrap: pretty; }
   background: var(--paper-3);
 }
 
-.modal-image img { width: 100%; height: 100%; object-fit: cover; }
+.modal-image img { width: 100%; height: 100%; object-fit: contain; background: var(--paper); }
 
 .modal-content { padding: var(--space-lg); }
+
+.modal-thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+}
+
+.modal-thumb {
+  width: 3.75rem;
+  height: 3.75rem;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--paper-3);
+  cursor: pointer;
+  transition: border-color var(--transition);
+}
+
+.modal-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+.modal-thumb:hover { border-color: var(--oak-soft); }
+
+.modal-thumb.active { border-color: var(--oak); box-shadow: inset 0 0 0 1px var(--oak); }
 
 .modal-meta {
   font-size: 0.75rem;

@@ -29,52 +29,12 @@
 
   const products = {
     1: {
-      title: 'Jídelní stůl z dubu',
-      meta: 'Dub · Stoly',
-      desc: 'Dubová deska spárovaná z fošen a naolejovaná. Podnož podle vás, dřevěná i kovová. Rozměry sedneme na váš prostor i na počet židlí.',
-      price: 'od 45 000 Kč',
-      image: 'assets/images/prod-stul.jpg',
-      type: 'stoly'
-    },
-    2: {
-      title: 'Vestavěná skříň',
-      meta: 'Ořech · Skříně',
-      desc: 'Skříň na míru přesně na centimetr, od podlahy až ke stropu. Vnitřek uspořádáme podle toho, co do ní půjde. Tiché dovírání je samozřejmost.',
-      price: 'od 80 000 Kč',
-      image: 'assets/images/prod-skrin.jpg',
-      type: 'skrine'
-    },
-    3: {
-      title: 'Kuchyně na míru',
-      meta: 'Dub · Kuchyně',
-      desc: 'Dvířka ze dřeva, pevné korpusy a pracovní deska podle výběru. Navrhneme ji tak, aby se v ní dobře vařilo a přitom vypadala.',
-      price: 'od 120 000 Kč',
-      image: 'assets/images/prod-kuchyne.jpg',
-      type: 'kuchyne'
-    },
-    4: {
-      title: 'Schodiště z jasanu',
-      meta: 'Jasan · Schody',
-      desc: 'Stupně z jasanu, pevná konstrukce a hladké madlo. Pohlídáme, aby nevrzalo a dobře se po něm chodilo naboso.',
-      price: 'od 65 000 Kč',
-      image: 'assets/images/prod-schody.jpg',
-      type: 'schody'
-    },
-    5: {
-      title: 'Konferenční stolek',
-      meta: 'Ořech · Stoly',
-      desc: 'Menší stolek z ořechu. Poctivý kus do obýváku, který vydrží roky každodenního používání.',
-      price: 'od 18 000 Kč',
-      image: 'assets/images/prod-stolek.jpg',
-      type: 'stoly'
-    },
-    6: {
-      title: 'Knihovna z dubu',
-      meta: 'Dub · Skříně',
-      desc: 'Knihovna s policemi na míru vaší sbírce. Stavitelné police, pevná záda, rozměry přesně na váš pokoj.',
-      price: 'od 35 000 Kč',
-      image: 'assets/images/prod-knihovna.jpg',
-      type: 'skrine'
+      title: 'Stolek z dřevěného kotouče',
+      meta: 'Masivní dřevo · Kovové nohy',
+      desc: 'Kotouč masivního dřeva s ponechanou přírodní hranou a kůrou, na černých kovových nohách. Do čela vypálíme motiv podle vás, na fotkách dvě postavičky se srdcem. Každý kotouč je originál, kresba letokruhů se nikdy neopakuje.',
+      price: 'Cena na dotaz',
+      images: ['assets/images/image2.png', 'assets/images/image1.jpeg', 'assets/images/image3.png'],
+      type: 'stolek'
     }
   };
 
@@ -167,9 +127,29 @@
       document.getElementById('modal-meta').textContent = product.meta;
       document.getElementById('modal-desc').textContent = product.desc;
       document.getElementById('modal-price').textContent = product.price;
-      const img = document.getElementById('modal-image');
-      img.src = product.image;
-      img.alt = product.title;
+
+      const mainImg = document.getElementById('modal-image');
+      const images = product.images || (product.image ? [product.image] : []);
+      const setMain = (src) => { mainImg.src = src; mainImg.alt = product.title; };
+      if (images.length) setMain(images[0]);
+
+      // Náhledy galerie (jen pokud je víc fotek)
+      const thumbs = document.getElementById('modal-thumbs');
+      thumbs.innerHTML = '';
+      if (images.length > 1) {
+        images.forEach((src, i) => {
+          const t = document.createElement('button');
+          t.type = 'button';
+          t.className = 'modal-thumb' + (i === 0 ? ' active' : '');
+          t.innerHTML = '<img src="' + src + '" alt="" loading="lazy">';
+          t.addEventListener('click', () => {
+            setMain(src);
+            thumbs.querySelectorAll('.modal-thumb').forEach(el => el.classList.remove('active'));
+            t.classList.add('active');
+          });
+          thumbs.appendChild(t);
+        });
+      }
 
       modal.showModal();
     });
