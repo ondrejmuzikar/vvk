@@ -31,7 +31,7 @@
     1: {
       title: 'Stolek z dřevěného kotouče',
       meta: 'Masivní dřevo · Kovové nohy',
-      desc: 'Kotouč masivního dřeva s ponechanou přírodní hranou a kůrou, na černých kovových nohách. Do čela vypálíme motiv podle vás, na fotkách dvě postavičky se srdcem. Každý kotouč je originál, kresba letokruhů se nikdy neopakuje.',
+      desc: 'Kotouč masivního dřeva na černých kovových nohách. Povrch i hranu doladíme podle vás: můžete ho mít celý s kůrou, úplně bez kůry, nebo s kůrou po obvodu a čelem vybroušeným do hladka, jako na fotkách. Do čela vypálíme motiv podle vaší představy, na fotkách jsou dvě postavičky se srdcem. Každý kotouč je originál, kresba letokruhů se nikdy neopakuje.',
       price: 'Cena na dotaz',
       images: ['assets/images/image2.png', 'assets/images/image1.jpeg', 'assets/images/image3.png'],
       type: 'stolek'
