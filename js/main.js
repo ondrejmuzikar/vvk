@@ -118,9 +118,8 @@
   const modalClose = document.getElementById('modal-close');
   const typeSelect = document.getElementById('type');
 
-  document.querySelectorAll('[data-open-product]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const product = products[btn.dataset.openProduct];
+  function openProduct(id) {
+      const product = products[id];
       if (!product) return;
 
       document.getElementById('modal-title').textContent = product.title;
@@ -152,7 +151,19 @@
       }
 
       modal.showModal();
-    });
+  }
+
+  document.querySelectorAll('[data-open-product]').forEach(el => {
+    el.addEventListener('click', () => openProduct(el.dataset.openProduct));
+    // Klávesnice pro prvky, které nejsou nativní tlačítko (např. fotka s role="button")
+    if (el.tagName !== 'BUTTON') {
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openProduct(el.dataset.openProduct);
+        }
+      });
+    }
   });
 
   modalClose.addEventListener('click', () => modal.close());

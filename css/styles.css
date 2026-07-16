@@ -744,6 +744,23 @@ p { text-wrap: pretty; }
   margin-bottom: 0.35rem;
 }
 
+/* Název jako klikací odkaz na detail (vypadá jako text nadpisu) */
+.product-title-btn {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  transition: color var(--transition);
+}
+
+.product-title-btn:hover { color: var(--oak); }
+
+/* Klikací fotka produktu */
+.product-image[data-open-product] { cursor: pointer; }
+
 .product-meta {
   font-size: 0.75rem;
   letter-spacing: 0.14em;
@@ -1275,7 +1292,8 @@ p { text-wrap: pretty; }
   background: var(--paper);
   color: var(--ink);
   box-shadow: 0 40px 100px -30px rgba(20, 15, 10, 0.6);
-  overflow: hidden;
+  max-height: calc(100dvh - 2rem);
+  overflow: auto;
 }
 
 .product-modal::backdrop {
@@ -1480,6 +1498,9 @@ p { text-wrap: pretty; }
   .section { padding: var(--space-2xl) 0; }
 
   .section-header { margin-bottom: var(--space-xl); }
+
+  /* Detail produktu: fotka nezabere celou výšku, ať je vidět i cena a tlačítko */
+  .modal-image { aspect-ratio: auto; height: 44vh; }
 }
 
 @media (prefers-reduced-motion: reduce) {
