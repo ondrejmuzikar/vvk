@@ -735,6 +735,10 @@ p { text-wrap: pretty; }
 
 .product-card:hover .product-image img { transform: scale(1.05); }
 
+/* Široké fotky (např. vyvýšený záhon) ukázat celé, ne oříznuté */
+.product-image--full img { object-fit: contain; padding: var(--space-sm); }
+.product-card:hover .product-image--full img { transform: scale(1.03); }
+
 .product-info {
   padding: var(--space-md) 0 0;
 }
