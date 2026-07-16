@@ -35,6 +35,14 @@
       price: 'od 2 000 Kč',
       images: ['assets/images/image2.png', 'assets/images/image1.jpeg', 'assets/images/image3.png'],
       type: 'stolek'
+    },
+    2: {
+      title: 'Vyvýšený záhon na míru',
+      meta: 'Dřevo dle výběru · Rozměry na míru',
+      desc: 'Vyvýšený záhon přesně na míru vašemu místu, ať už jde na terasu, na zahradu, nebo k domu. Délku i výšku uděláme podle vás. Materiál volíme podle toho, jak dlouho chcete, aby vám záhon vydržel, a od toho se odvíjí i cena a výsledná barva dřeva. Nejdostupnější provedení začíná na 1 500 Kč, je to nejméně odolná varianta, která vydrží zhruba do pěti let. Za trvanlivější dřevo, které vydrží výrazně déle, si připlatíte, a rádi vám poradíme, co se pro vaše použití vyplatí. Zevnitř je záhon vyložený drenážní fólií, která chrání dřevo před vlhkostí ze zeminy a prodlužuje jeho životnost. Rohy zpevňujeme masivními sloupky, aby záhon udržel tvar i naplněný zeminou.',
+      price: 'od 1 500 Kč',
+      images: ['assets/images/image6.jpeg', 'assets/images/image5.jpeg', 'assets/images/image7.jpeg', 'assets/images/image8.jpeg', 'assets/images/image9.jpeg'],
+      type: 'zahon'
     }
   };
 
