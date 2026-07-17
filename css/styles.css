@@ -1449,6 +1449,21 @@ p { text-wrap: pretty; }
 
 .modal-desc { color: var(--muted); margin-bottom: var(--space-md); }
 
+.modal-more {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--oak);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: color var(--transition);
+}
+
+.modal-more:hover, .modal-more:focus-visible { color: var(--ink); }
+
 .modal-price {
   font-family: var(--font-serif);
   font-size: 1.375rem;

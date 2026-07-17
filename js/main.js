@@ -39,7 +39,8 @@
     2: {
       title: 'Vyvýšený záhon na míru',
       meta: 'Dřevo dle výběru · Rozměry na míru',
-      desc: 'Vyvýšený záhon přesně na míru vašemu místu, ať už jde na terasu, na zahradu, nebo k domu. Délku i výšku uděláme podle vás. Materiál volíme podle toho, jak dlouho chcete, aby vám záhon vydržel, a od toho se odvíjí i cena a výsledná barva dřeva. Nejdostupnější provedení začíná na 1 500 Kč, je to nejméně odolná varianta, která vydrží zhruba do pěti let. Za trvanlivější dřevo, které vydrží výrazně déle, si připlatíte, a rádi vám poradíme, co se pro vaše použití vyplatí. Zevnitř je záhon vyložený drenážní fólií, která chrání dřevo před vlhkostí ze zeminy a prodlužuje jeho životnost. Rohy zpevňujeme masivními sloupky, aby záhon udržel tvar i naplněný zeminou.',
+      desc: 'Vyvýšený záhon přesně na míru vašemu místu, ať už jde na terasu, na zahradu, nebo k domu. Délku i výšku uděláme podle vás. Materiál volíme podle toho, jak dlouho chcete, aby vám záhon vydržel, a od toho se odvíjí i cena a výsledná barva dřeva.',
+      more: 'Nejdostupnější provedení začíná na 1 500 Kč, je to nejméně odolná varianta, která vydrží zhruba do pěti let. Za trvanlivější dřevo, které vydrží výrazně déle, si připlatíte, a rádi vám poradíme, co se pro vaše použití vyplatí. Zevnitř je záhon vyložený drenážní fólií, která chrání dřevo před vlhkostí ze zeminy a prodlužuje jeho životnost. Rohy zpevňujeme masivními sloupky, aby záhon udržel tvar i naplněný zeminou.',
       price: 'od 1 500 Kč',
       images: ['assets/images/image6.jpeg', 'assets/images/image5.jpeg', 'assets/images/image7.jpeg', 'assets/images/image8.jpeg', 'assets/images/image9.jpeg'],
       type: 'zahon'
@@ -130,6 +131,17 @@
   const slides = document.getElementById('modal-slides');
   const thumbs = document.getElementById('modal-thumbs');
   const counter = document.getElementById('modal-counter');
+  const desc = document.getElementById('modal-desc');
+  const descRest = document.getElementById('modal-desc-rest');
+  const moreBtn = document.getElementById('modal-more');
+
+  function expandDesc(on) {
+    descRest.hidden = !on;
+    moreBtn.textContent = on ? 'méně' : 'více';   // po rozbalení sedí na konci textu
+    moreBtn.setAttribute('aria-expanded', String(on));
+  }
+
+  moreBtn.addEventListener('click', () => expandDesc(descRest.hidden));
 
   // Stav otevřené galerie: fotky produktu a pořadí té zobrazené
   let gallery = [];
@@ -159,8 +171,13 @@
 
       document.getElementById('modal-title').textContent = product.title;
       document.getElementById('modal-meta').textContent = product.meta;
-      document.getElementById('modal-desc').textContent = product.desc;
       document.getElementById('modal-price').textContent = product.price;
+
+      // Dlouhý popis se schová pod „více“, ať okno nepřeroste obrazovku
+      desc.textContent = product.desc;
+      descRest.textContent = product.more || '';
+      moreBtn.hidden = !product.more;
+      expandDesc(false);
 
       gallery = product.images || (product.image ? [product.image] : []);
       figure.classList.toggle('single', gallery.length < 2);
