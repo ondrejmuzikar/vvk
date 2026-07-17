@@ -1,6 +1,11 @@
 /* Vojtovy Velké Klády · Editorial Redesign */
 
 :root {
+  /* Web je jen ve světlé variantě. Bez tohohle si ho Chrome může sám
+     ztmavovat (Auto Dark Mode) — fotky produktů na bílém pozadí přitom
+     vyhodnotí jako grafiku a přebarví je, i když zbytek stránky nechá být. */
+  color-scheme: only light;
+
   --paper: #F4EEE4;
   --paper-2: #ECE4D6;
   --paper-3: #E4DACA;
