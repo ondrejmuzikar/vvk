@@ -145,11 +145,6 @@
       ? galleryTitle + ' – fotka ' + (galleryIndex + 1) + ' z ' + gallery.length
       : galleryTitle;
 
-    // Restart animace, aby prolnutí naskočilo i při rychlém proklikávání
-    mainImg.classList.remove('swapping');
-    void mainImg.offsetWidth;
-    mainImg.classList.add('swapping');
-
     thumbs.querySelectorAll('.modal-thumb').forEach((el, idx) => {
       el.classList.toggle('active', idx === galleryIndex);
     });
