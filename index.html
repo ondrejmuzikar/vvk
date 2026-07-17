@@ -394,8 +394,15 @@
   <dialog class="product-modal" id="product-modal" aria-labelledby="modal-title">
     <div class="modal-inner">
       <button class="modal-close" aria-label="Zavřít" id="modal-close">&times;</button>
-      <div class="modal-image">
+      <div class="modal-image" id="modal-figure">
         <img src="" alt="" id="modal-image">
+        <button class="modal-nav modal-nav-prev" type="button" aria-label="Předchozí fotka" id="modal-prev">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+        </button>
+        <button class="modal-nav modal-nav-next" type="button" aria-label="Další fotka" id="modal-next">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+        </button>
+        <p class="modal-counter" id="modal-counter" aria-hidden="true"></p>
       </div>
       <div class="modal-content">
         <p class="modal-meta" id="modal-meta"></p>

@@ -126,6 +126,37 @@
   const modalClose = document.getElementById('modal-close');
   const typeSelect = document.getElementById('type');
 
+  const figure = document.getElementById('modal-figure');
+  const mainImg = document.getElementById('modal-image');
+  const thumbs = document.getElementById('modal-thumbs');
+  const counter = document.getElementById('modal-counter');
+
+  // Stav otevřené galerie: fotky produktu a pořadí té zobrazené
+  let gallery = [];
+  let galleryIndex = 0;
+  let galleryTitle = '';
+
+  function showImage(i) {
+    if (!gallery.length) return;
+    galleryIndex = (i + gallery.length) % gallery.length;   // dokola: za poslední je zase první
+
+    mainImg.src = gallery[galleryIndex];
+    mainImg.alt = gallery.length > 1
+      ? galleryTitle + ' – fotka ' + (galleryIndex + 1) + ' z ' + gallery.length
+      : galleryTitle;
+
+    // Restart animace, aby prolnutí naskočilo i při rychlém proklikávání
+    mainImg.classList.remove('swapping');
+    void mainImg.offsetWidth;
+    mainImg.classList.add('swapping');
+
+    thumbs.querySelectorAll('.modal-thumb').forEach((el, idx) => {
+      el.classList.toggle('active', idx === galleryIndex);
+    });
+
+    counter.textContent = (galleryIndex + 1) + ' / ' + gallery.length;
+  }
+
   function openProduct(id) {
       const product = products[id];
       if (!product) return;
@@ -135,31 +166,61 @@
       document.getElementById('modal-desc').textContent = product.desc;
       document.getElementById('modal-price').textContent = product.price;
 
-      const mainImg = document.getElementById('modal-image');
-      const images = product.images || (product.image ? [product.image] : []);
-      const setMain = (src) => { mainImg.src = src; mainImg.alt = product.title; };
-      if (images.length) setMain(images[0]);
+      gallery = product.images || (product.image ? [product.image] : []);
+      galleryTitle = product.title;
+      figure.classList.toggle('single', gallery.length < 2);
 
       // Náhledy galerie (jen pokud je víc fotek)
-      const thumbs = document.getElementById('modal-thumbs');
       thumbs.innerHTML = '';
-      if (images.length > 1) {
-        images.forEach((src, i) => {
+      if (gallery.length > 1) {
+        gallery.forEach((src, i) => {
           const t = document.createElement('button');
           t.type = 'button';
-          t.className = 'modal-thumb' + (i === 0 ? ' active' : '');
+          t.className = 'modal-thumb';
+          t.setAttribute('aria-label', 'Fotka ' + (i + 1));
           t.innerHTML = '<img src="' + src + '" alt="" loading="lazy">';
-          t.addEventListener('click', () => {
-            setMain(src);
-            thumbs.querySelectorAll('.modal-thumb').forEach(el => el.classList.remove('active'));
-            t.classList.add('active');
-          });
+          t.addEventListener('click', () => showImage(i));
           thumbs.appendChild(t);
         });
       }
 
+      showImage(0);
       modal.showModal();
   }
+
+  document.getElementById('modal-prev').addEventListener('click', () => showImage(galleryIndex - 1));
+  document.getElementById('modal-next').addEventListener('click', () => showImage(galleryIndex + 1));
+
+  modal.addEventListener('keydown', (e) => {
+    if (gallery.length < 2) return;
+    if (e.key === 'ArrowLeft') { e.preventDefault(); showImage(galleryIndex - 1); }
+    if (e.key === 'ArrowRight') { e.preventDefault(); showImage(galleryIndex + 1); }
+  });
+
+  /* ── Přejetí prstem mezi fotkami (mobil) ── */
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let swiping = false;
+
+  figure.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1 || gallery.length < 2) return;
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    swiping = true;
+  }, { passive: true });
+
+  figure.addEventListener('touchend', (e) => {
+    if (!swiping) return;
+    swiping = false;
+
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+
+    // Jen vodorovné tahy, ať svislé posouvání stránky funguje dál
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+      showImage(galleryIndex + (dx < 0 ? 1 : -1));
+    }
+  }, { passive: true });
 
   document.querySelectorAll('[data-open-product]').forEach(el => {
     el.addEventListener('click', () => openProduct(el.dataset.openProduct));
