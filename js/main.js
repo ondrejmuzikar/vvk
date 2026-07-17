@@ -127,55 +127,30 @@
   const typeSelect = document.getElementById('type');
 
   const figure = document.getElementById('modal-figure');
-  const mainImg = document.getElementById('modal-image');
+  const slides = document.getElementById('modal-slides');
   const thumbs = document.getElementById('modal-thumbs');
   const counter = document.getElementById('modal-counter');
 
   // Stav otevřené galerie: fotky produktu a pořadí té zobrazené
   let gallery = [];
+  let slideEls = [];
   let galleryIndex = 0;
-  let galleryTitle = '';
-
-  /* Fotky jsou progresivní JPEG a velké PNG: prohlížeč je dekóduje po částech
-     a rozdělaný mezivýsledek vypadá jako tmavá šmouha. Proto fotku napřed
-     necháme dekódovat stranou a do stránky ji pustíme, až je hotová — jinak
-     při rychlém proklikávání blikne ztmavlá. */
-  const decoded = new Map();
-  let swapToken = 0;
-
-  function prepare(src) {
-    let img = decoded.get(src);
-    if (!img) {
-      img = new Image();
-      img.src = src;
-      decoded.set(src, img);
-    }
-    return img;
-  }
 
   function showImage(i) {
     if (!gallery.length) return;
     galleryIndex = (i + gallery.length) % gallery.length;   // dokola: za poslední je zase první
 
-    const src = gallery[galleryIndex];
-
-    mainImg.alt = gallery.length > 1
-      ? galleryTitle + ' – fotka ' + (galleryIndex + 1) + ' z ' + gallery.length
-      : galleryTitle;
+    slideEls.forEach((el, idx) => {
+      const current = idx === galleryIndex;
+      el.classList.toggle('current', current);
+      el.setAttribute('aria-hidden', String(!current));
+    });
 
     thumbs.querySelectorAll('.modal-thumb').forEach((el, idx) => {
       el.classList.toggle('active', idx === galleryIndex);
     });
 
     counter.textContent = (galleryIndex + 1) + ' / ' + gallery.length;
-
-    // Mezitím může přijít další kliknutí; pak tohle přepnutí už zahodíme
-    const token = ++swapToken;
-    const img = prepare(src);
-    const swap = () => { if (token === swapToken) mainImg.src = src; };
-
-    if (img.decode) img.decode().then(swap, swap);
-    else swap();
   }
 
   function openProduct(id) {
@@ -188,13 +163,19 @@
       document.getElementById('modal-price').textContent = product.price;
 
       gallery = product.images || (product.image ? [product.image] : []);
-      galleryTitle = product.title;
       figure.classList.toggle('single', gallery.length < 2);
 
-      // Ať jsou hotové dřív, než na ně uživatel doklikne
-      gallery.forEach(src => {
-        const img = prepare(src);
-        if (img.decode) img.decode().catch(() => {});
+      // Všechny fotky rovnou do stránky; přepínání pak už jen odkrývá hotové
+      slides.innerHTML = '';
+      slideEls = gallery.map((src, i) => {
+        const el = document.createElement('img');
+        el.className = 'modal-slide';
+        el.src = src;
+        el.alt = gallery.length > 1
+          ? product.title + ' – fotka ' + (i + 1) + ' z ' + gallery.length
+          : product.title;
+        slides.appendChild(el);
+        return el;
       });
 
       // Náhledy galerie (jen pokud je víc fotek)

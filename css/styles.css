@@ -1339,7 +1339,21 @@ p { text-wrap: pretty; }
   touch-action: pan-y;
 }
 
-.modal-image img { width: 100%; height: 100%; object-fit: contain; background: #fff; }
+/* Každá fotka má vlastní <img> a leží na stejném místě přes sebe. Přepnutí
+   jen odkryje tu hotovou — do žádného obrázku se nikdy nenahrává nová fotka. */
+.modal-slides { position: absolute; inset: 0; }
+
+.modal-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #fff;
+  opacity: 0;
+}
+
+.modal-slide.current { opacity: 1; }
 
 /* Šipky a počítadlo dávají smysl jen u víc fotek */
 .modal-image.single .modal-nav,
@@ -1347,6 +1361,7 @@ p { text-wrap: pretty; }
 
 .modal-nav {
   position: absolute;
+  z-index: 2;
   top: 50%;
   transform: translateY(-50%);
   width: 2.5rem;
@@ -1377,6 +1392,7 @@ p { text-wrap: pretty; }
 
 .modal-counter {
   position: absolute;
+  z-index: 2;
   right: var(--space-sm);
   bottom: var(--space-sm);
   padding: 0.15rem 0.55rem;
