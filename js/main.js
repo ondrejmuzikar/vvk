@@ -136,11 +136,29 @@
   let galleryIndex = 0;
   let galleryTitle = '';
 
+  /* Fotky jsou progresivní JPEG a velké PNG: prohlížeč je dekóduje po částech
+     a rozdělaný mezivýsledek vypadá jako tmavá šmouha. Proto fotku napřed
+     necháme dekódovat stranou a do stránky ji pustíme, až je hotová — jinak
+     při rychlém proklikávání blikne ztmavlá. */
+  const decoded = new Map();
+  let swapToken = 0;
+
+  function prepare(src) {
+    let img = decoded.get(src);
+    if (!img) {
+      img = new Image();
+      img.src = src;
+      decoded.set(src, img);
+    }
+    return img;
+  }
+
   function showImage(i) {
     if (!gallery.length) return;
     galleryIndex = (i + gallery.length) % gallery.length;   // dokola: za poslední je zase první
 
-    mainImg.src = gallery[galleryIndex];
+    const src = gallery[galleryIndex];
+
     mainImg.alt = gallery.length > 1
       ? galleryTitle + ' – fotka ' + (galleryIndex + 1) + ' z ' + gallery.length
       : galleryTitle;
@@ -150,6 +168,14 @@
     });
 
     counter.textContent = (galleryIndex + 1) + ' / ' + gallery.length;
+
+    // Mezitím může přijít další kliknutí; pak tohle přepnutí už zahodíme
+    const token = ++swapToken;
+    const img = prepare(src);
+    const swap = () => { if (token === swapToken) mainImg.src = src; };
+
+    if (img.decode) img.decode().then(swap, swap);
+    else swap();
   }
 
   function openProduct(id) {
@@ -164,6 +190,12 @@
       gallery = product.images || (product.image ? [product.image] : []);
       galleryTitle = product.title;
       figure.classList.toggle('single', gallery.length < 2);
+
+      // Ať jsou hotové dřív, než na ně uživatel doklikne
+      gallery.forEach(src => {
+        const img = prepare(src);
+        if (img.decode) img.decode().catch(() => {});
+      });
 
       // Náhledy galerie (jen pokud je víc fotek)
       thumbs.innerHTML = '';
